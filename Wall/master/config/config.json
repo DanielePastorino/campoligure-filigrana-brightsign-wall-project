@@ -1,0 +1,23 @@
+{
+    "video": {
+        "screenmode": "1920x1080x60p",
+        "rotation": "identity"
+    },
+    "audio": {
+        "hdmi": false
+    },
+    "udp": {
+        "receiver": {
+            "port": 5000
+        }
+    },
+    "media": {
+        "loop": "data\\contents\\loop.mp4",
+        "signal": "data\\contents\\v1.mp4"
+    },
+    "wall": {
+        "domain": "roccella4",
+        "ptp": "44"
+    },
+    "name": "ab"
+}

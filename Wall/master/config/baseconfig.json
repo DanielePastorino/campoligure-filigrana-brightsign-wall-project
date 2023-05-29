@@ -1,0 +1,23 @@
+{
+  "rete": {
+    "dhcp": false,
+    "gate": true,
+    "ethernet": {
+      "enable": true,
+      "ipaddress": "192.168.10.16",
+      "netmask": "255.255.255.0",
+      "gateway": "192.168.10.1"
+    }
+  },
+  "debug": {
+    "ssh": true
+  },
+  "mainscript": {
+    "folder": "prj",
+    "file": "main.brs"
+  },
+  "standbyscript": {
+    "folder": "prj",
+    "file": "standby.brs"
+  }
+}

@@ -1,0 +1,13 @@
+{
+    "video": {
+        "screenmode": "1920x1080x60p",
+        "rotation": "identity"
+    },
+    "audio": {
+        "hdmi": false
+    },
+    "wall": {
+        "domain": "roccella4",
+        "ptp": "44"
+    }
+}

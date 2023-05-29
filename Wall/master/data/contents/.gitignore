@@ -1,0 +1,70 @@
+## Ignore Brightscript/BrightAuthor
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+.DS_Store
+.vs
+
+# Files Video
+*.mp4
+*.avi
+*.mkv
+*.mpeg
+*.mov
+*.flv
+*.webm
+*.wmv
+*.f4v
+
+# Files Audio
+*.mp3
+*.wav
+
+# Files Images
+*.jpg
+*.jpeg
+*.jfif
+*.pjpeg
+*.pjp
+*.gif
+*.png
+*.svg
+*.bmp
+*.tiff
+*.ico
+
+# Files Other
+*.zip
+*.rar
+*.7z
+*.bin
+*.xlsx
+*.xls
+*.ods
+*.dat
+*.odt
+*.pdf
+*.url
+*.lnk
+*.bsfw
+*.gdoc
+*.doc
+
+# Except this...
+!data*
+!content*
+!contents*
+!Elements*
+
+
+
+
+
