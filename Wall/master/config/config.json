@@ -9,15 +9,23 @@
     "udp": {
         "receiver": {
             "port": 5000
+        },
+        "sender": {
+          "toip": "10.0.12.210",
+          "port": 12003
         }
+    },
+    "video_event": {
+        "file": "config\\lightevents.json"
     },
     "media": {
         "loop": "data\\contents\\loop.mp4",
-        "signal": "data\\contents\\v1.mp4"
+        "signal_it": "data\\contents\\it.mp4",
+        "signal_en": "data\\contents\\en.mp4"
     },
     "wall": {
-        "domain": "roccella4",
-        "ptp": "44"
+        "domain": "filigrana1",
+        "ptp": "11"
     },
-    "name": "ab"
+    "name": "fi"
 }

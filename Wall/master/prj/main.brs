@@ -63,6 +63,9 @@ Sub Main(cfg as Dynamic)
 	udpReceiver = CreateObject("roDatagramReceiver", objConfig.udp.receiver.port)
 	udpReceiver.SetPort(messagePort)
 
+    ' sender
+	udpSender = CreateObject("roDatagramSender")
+
     ' =========== VIDEOS ===========
     videoPlayer = CreateObject("roVideoPlayer")
     videoPlayer.SetPort(messagePort)
@@ -73,7 +76,14 @@ Sub Main(cfg as Dynamic)
 
     ' =========== OTHER CONFIG ===========
     loopObj = objConfig.media.loop
-	signalObj = objConfig.media.signal
+	signalObj_it = objConfig.media.signal_it
+    signalObj_en = objConfig.media.signal_en
+
+    jsonObj = invalid
+	if objConfig.video_event.file <> invalid and objConfig.video_event.file <> "" then
+		jsonObj = ParseLightsFromJson(objConfig.video_event.file)
+		print "***Video Events loaded"
+	end if
 
 	regexObj = CreateObject("roRegex", ";", "")
 	isPlayingSignal = false
@@ -86,10 +96,20 @@ Sub Main(cfg as Dynamic)
 
 _MainLoop:
 
+    ' Init luci
+	if jsonObj <> invalid then
+		For Each c in jsonObj.init
+			print "-(UDP Sender) ";c.type;" ";c.cmd;" to ";c.ip;":";c.port
+			udpSender.SetDestination(c.ip, c.port)
+			udpSender.Send(c.cmd)
+		End For
+	end if 
+
     ' Playing LOOP
     isPlayingSignal = false
-	print "-(LOOP)"
+	
 	' WALL MASTER
+    print "-(LOOP)"
 	sm = syncManager.Synchronize(loopObj, 0)
 	print "SEND: ";loopObj;" FILE: ";loopObj
 	vd = CreateObject("roAssociativeArray")
@@ -97,6 +117,7 @@ _MainLoop:
 	vd.SyncDomain = sm.GetDomain()
 	vd.SyncId = sm.GetId()
 	vd.SyncIsoTimestamp = sm.GetIsoTimestamp()
+    videoPlayer.ClearEvents()
 	videoPlayer.PlayFile(vd)
 
 _MsgLoop:
@@ -114,28 +135,52 @@ _MsgLoop:
 		if lineSplit <> invalid and lineSplit.Count() = 2 then
 			' è per me?
 			if lineSplit[0] = objConfig.name then
-				if lineSplit[1] = "1" then
-					isPlayingSignal = true
-					' PLAY del video
-					print "->PLAY: ";signalObj
-					' WALL MASTER
-					sm = syncManager.Synchronize(signalObj, 0)
-					print "SEND: ";signalObj;" FILE: ";signalObj
-					vd = CreateObject("roAssociativeArray")
-					vd.Filename = signalObj
-					vd.SyncDomain = sm.GetDomain()
-					vd.SyncId = sm.GetId()
-					vd.SyncIsoTimestamp = sm.GetIsoTimestamp()
-					videoPlayer.PlayFile(vd)
-				end if
+                if lineSplit[1] = "1" then
+                    signalObj = signalObj_it
+                else 
+                    signalObj = signalObj_en
+                end if
+
+                isPlayingSignal = true
+                ' PLAY del video
+                print "->PLAY: ";signalObj
+                ' WALL MASTER
+                sm = syncManager.Synchronize(signalObj, 0)
+                print "SEND: ";signalObj;" FILE: ";signalObj
+                vd = CreateObject("roAssociativeArray")
+                vd.Filename = signalObj
+                vd.SyncDomain = sm.GetDomain()
+                vd.SyncId = sm.GetId()
+                vd.SyncIsoTimestamp = sm.GetIsoTimestamp()
+                videoPlayer.ClearEvents()
+                videoPlayer.PlayFile(vd)
+
+                ' Creo eventi per le luci (dopo PlayFile perchè altrimenti ho errori sul primo evento scatenato!!!)
+                if jsonObj <> invalid then
+                    CreateVideoEventInMillisencond(jsonObj, videoPlayer)
+                end if
+
 			end if
 		end if
 
     ' Evento video
     else if type(msgReceived) = "roVideoEvent" then
 
+        'Eventi video (luci) solo se gira in signal e sono abilitati gli eventi
+		if msgReceived.GetInt() = 12 and jsonObj.events <> invalid then
+			eventId = msgReceived.GetData()
+			actionsLights = jsonObj.events[eventId].actions	
+			if actionsLights <> invalid then
+				' SEND UDP
+				print "#TIME: ";jsonObj.events[eventId].time
+				For Each c in actionsLights
+					print "-(UDP Sender) ";c.type;" ";c.cmd;" to ";c.ip;":";c.port
+					udpSender.SetDestination(c.ip, c.port)
+					udpSender.Send(c.cmd)
+				End for
+			end if
         ' Evento fine video
-        if msgReceived.GetInt() = 8 then
+        else if msgReceived.GetInt() = 8 then
             goto _MainLoop
         end if
 

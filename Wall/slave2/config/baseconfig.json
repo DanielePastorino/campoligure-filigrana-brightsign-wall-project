@@ -4,9 +4,9 @@
     "gate": true,
     "ethernet": {
       "enable": true,
-      "ipaddress": "192.168.10.18",
+      "ipaddress": "10.0.12.202",
       "netmask": "255.255.255.0",
-      "gateway": "192.168.10.1"
+      "gateway": "10.0.12.2"
     }
   },
   "debug": {
