@@ -82,7 +82,7 @@ Sub Main(cfg as Dynamic)
     jsonObj = invalid
 	if objConfig.video_event.file <> invalid and objConfig.video_event.file <> "" then
 		jsonObj = ParseLightsFromJson(objConfig.video_event.file)
-		print "***Video Events loaded"
+		print "***Video Events loaded ";jsonObj
 	end if
 
 	regexObj = CreateObject("roRegex", ";", "")
@@ -153,13 +153,11 @@ _MsgLoop:
                 vd.SyncId = sm.GetId()
                 vd.SyncIsoTimestamp = sm.GetIsoTimestamp()
                 videoPlayer.ClearEvents()
-                videoPlayer.PlayFile(vd)
-
-                ' Creo eventi per le luci (dopo PlayFile perchè altrimenti ho errori sul primo evento scatenato!!!)
                 if jsonObj <> invalid then
+                    print "*** create video events"
                     CreateVideoEventInMillisencond(jsonObj, videoPlayer)
                 end if
-
+                videoPlayer.PlayFile(vd)
 			end if
 		end if
 
@@ -168,13 +166,15 @@ _MsgLoop:
 
         'Eventi video (luci) solo se gira in signal e sono abilitati gli eventi
 		if msgReceived.GetInt() = 12 and jsonObj.events <> invalid then
+            
 			eventId = msgReceived.GetData()
 			actionsLights = jsonObj.events[eventId].actions	
+            print ".... eventId: ";eventId
 			if actionsLights <> invalid then
 				' SEND UDP
 				print "#TIME: ";jsonObj.events[eventId].time
 				For Each c in actionsLights
-					print "-(UDP Sender) ";c.type;" ";c.cmd;" to ";c.ip;":";c.port
+					print ">(UDP Sender) ";c.type;" ";c.cmd;" to ";c.ip;":";c.port
 					udpSender.SetDestination(c.ip, c.port)
 					udpSender.Send(c.cmd)
 				End for

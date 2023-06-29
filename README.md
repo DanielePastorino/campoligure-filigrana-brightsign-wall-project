@@ -14,4 +14,8 @@ Info preliminari:
 - infine parte il video vero e proprio e in sync su altri 2 monitor (slave)
 - alla fine luci ambientali on
 
+NOTE:
+---
 
+- Relè: 1,2,3,4 per i **faretti**
+- Relè: 5,6 per luci **ambientali**
